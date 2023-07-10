@@ -50,8 +50,9 @@ pipeline {
             }
             steps {
                 script {
-                      def SonarQubecredentialsId = 'sonar-api'
-                      staticCodeAnalysis(SonarQubecredentialsId)
+                      withSonarQubeEnv(credentialsId: 'sonar-api') {
+                      sh 'mvn clean package sonar:sonar'
+                        }
                 }
             }
         }
