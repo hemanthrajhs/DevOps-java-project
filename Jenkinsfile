@@ -1,4 +1,5 @@
-@library('my-shared-libraries')
+@Library('my-shared-libraries') _
+
 pipeline {
     agent any
 
@@ -7,12 +8,11 @@ pipeline {
             steps {
                 script {
                     gitCheckout(
-                        branch: "main",
-                        url: "https://github.com/hemanthrajhs/DevOps-java-project.git"
+                        branch: 'main',
+                        url: 'https://github.com/hemanthrajhs/DevOps-java-project.git'
                     )
                 }
             }
         }
-        
     }
 }
