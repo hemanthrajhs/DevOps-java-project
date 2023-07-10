@@ -52,9 +52,9 @@ pipeline {
                 script {
                     //  withSonarQubeEnv(credentialsId: 'sonar-api') {
                     //   sh 'mvn clean package sonar:sonar'
-                     def SonarQubecredentialsId = 'sonar-api'
-                   statiCodeAnalysis(SonarQubecredentialsId)
-                        }
+                    //  def SonarQubecredentialsId = 'sonar-api'
+                        statiCodeAnalysis('sonar-api')
+                    }
                 }
             }
         }
