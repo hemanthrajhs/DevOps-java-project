@@ -5,9 +5,13 @@ pipeline {
         stage('git checkout') {
             steps {
                 script {
-                    git branch: 'main', url: 'https://github.com/hemanthrajhs/DevOps-java-project.git'
+                    gitCheckout(
+                        branch: "main"
+                        url: "https://github.com/hemanthrajhs/DevOps-java-project.git"
+                    )
                 }
             }
         }
+        
     }
 }
