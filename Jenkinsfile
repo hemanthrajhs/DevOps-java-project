@@ -86,7 +86,7 @@ pipeline {
             }
             steps {
                 script {
-                    dockerBuild(params.Imagename, params.Imagetag, params.Dockerhubuser)
+                    dockerBuild(${params.Imagename}, ${params.Imagetag}, ${params.Dockerhubuser})
                 }
             }
         }
@@ -96,7 +96,7 @@ pipeline {
             }
             steps {
                 script {
-                    dockerscan(params.Imagename, params.Imagetag, params.Dockerhubuser)
+                    dockerscan(${params.Imagename}, ${params.Imagetag}, ${params.Dockerhubuser})
                 }
             }
         }
