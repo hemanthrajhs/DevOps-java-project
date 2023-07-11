@@ -59,7 +59,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Quality Gate Analysis: SonarQube') {
             when {
                 expression { params.action == 'create' }
@@ -70,7 +70,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Maven Build: Maven') {
             when {
                 expression { params.action == 'create' }
@@ -79,7 +79,7 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-        
+
         stage('Docker Build: ECR') {
             when {
                 expression { params.action == 'create' }
@@ -90,7 +90,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Docker scan: ECR') {
             when {
                 expression { params.action == 'create' }
@@ -101,14 +101,15 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Docker push: ECR') {
-            when {
-                expression { params.action == 'create' }
-            }
             steps {
                 script {
-                    dockerpush("${params.appname}", "${params.region}", "${params.aws_account_id}")
+                    withCredentials([string(credentialsId: 'secrate', variable: 'access')]) {
+                        sh 'docker login --username AWS --password-stdin 412781631922.dkr.ecr.ap-south-1.amazonaws.com'
+                        sh 'aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 412781631922.dkr.ecr.ap-south-1.amazonaws.com'
+                        // Your other Docker push commands or steps
+                    }
                 }
             }
         }
