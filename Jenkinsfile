@@ -5,6 +5,9 @@ pipeline {
 
     parameters {
         choice(name: 'action', choices: ['create', 'delete'], description: 'Choose create or destroy')
+        string(name: 'Imagename' description: 'name of the image' defaultValue 'javaapp')
+        string(name: 'Imagetag' description: 'name of the imagetag' defaultValue 'v1')
+        string(name: 'Dockerhubuser' description: 'name of the app' defaultValue 'hemanthrajhs')
     }
 
     stages {
@@ -72,6 +75,14 @@ pipeline {
             }
             steps {
                  sh 'mvn clean install'
+                }
+            }
+        stage('MavenBuild: Maven') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                dockerBuild("${params.Imagename}","${params.Imagetag}","${params.Dockerhubuser}",)
                 }
             }
         }
