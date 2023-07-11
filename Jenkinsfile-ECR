@@ -1,0 +1,116 @@
+@Library('my-shared-libraries') _
+
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'action', choices: ['create', 'delete'], description: 'Choose create or destroy')
+        string(name: 'appname', description: 'name of the app', defaultValue: 'javaapp')
+        string(name: 'region', description: 'name of the region', defaultValue: 'ap-south-1')
+        string(name: 'aws-account-id', description: 'name of the aws-account-id', defaultValue: '412781631922')
+    }
+
+    stages {
+        stage('Git Checkout') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    gitCheckout(
+                        branch: 'main',
+                        url: 'https://github.com/hemanthrajhs/DevOps-java-project.git'
+                    )
+                }
+            }
+        }
+
+        stage('Unit Test Maven') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    mvnTest()
+                }
+            }
+        }
+
+        stage('Integration Test') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    mvnIntegration()
+                }
+            }
+        }
+
+        stage('Static Code Analysis: SonarQube') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    withSonarQubeEnv(credentialsId: 'sonar-api') {
+                        sh 'mvn clean package sonar:sonar'
+                    }
+                }
+            }
+        }
+        
+        stage('Quality Gate Analysis: SonarQube') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    waitForQualityGate(abortPipeline: false, credentialsId: 'sonar-api')
+                }
+            }
+        }
+        
+        stage('Maven Build: Maven') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        
+        stage('Docker Build: ECR') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    dockerBuild("${params.appname}", "${params.region}", "${params.aws-account-id}")
+                }
+            }
+        }
+        
+        stage('Docker scan: ECR') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    dockerscan("${params.appname}", "${params.region}", "${params.aws-account-id}")
+                }
+            }
+        }
+        
+        stage('Docker push: ECR') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    dockerpush("${params.appname}", "${params.region}", "${params.aws-account-id}")
+                }
+            }
+        }
+    }
+}
