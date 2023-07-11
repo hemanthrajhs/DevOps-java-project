@@ -44,7 +44,7 @@ pipeline {
             }
         }
 
-        stage('Static Code Analysis') {
+        stage('Static Code Analysis: sonarqube') {
             when {
                 expression { params.action == 'create' }
             }
@@ -53,6 +53,16 @@ pipeline {
                     withSonarQubeEnv(credentialsId: 'sonar-api') {
                         sh 'mvn clean package sonar:sonar'
                     }
+                }
+            }
+        }
+        stage('Qulaity gate analysis: sonarqube') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-api' 
                 }
             }
         }
