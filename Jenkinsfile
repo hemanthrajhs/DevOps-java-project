@@ -5,9 +5,9 @@ pipeline {
 
     parameters {
         choice(name: 'action', choices: ['create', 'delete'], description: 'Choose create or destroy')
-        string(name: 'Imagename' description: 'name of the image' defaultValue 'javaapp')
-        string(name: 'Imagetag' description: 'name of the imagetag' defaultValue 'v1')
-        string(name: 'Dockerhubuser' description: 'name of the app' defaultValue 'hemanthrajhs')
+        string(name: 'Imagename', description: 'name of the image', defaultValue: 'javaapp')
+        string(name: 'Imagetag', description: 'name of the imagetag', defaultValue: 'v1')
+        string(name: 'Dockerhubuser', description: 'name of the app', defaultValue: 'hemanthrajhs')
     }
 
     stages {
@@ -47,44 +47,48 @@ pipeline {
             }
         }
 
-        stage('Static Code Analysis: sonarqube') {
+        stage('Static Code Analysis: SonarQube') {
             when {
                 expression { params.action == 'create' }
             }
             steps {
                 script {
                     withSonarQubeEnv(credentialsId: 'sonar-api') {
-                    sh 'mvn clean package sonar:sonar'
+                        sh 'mvn clean package sonar:sonar'
                     }
                 }
             }
         }
-        stage('Qulaity gate analysis: sonarqube') {
+        
+        stage('Quality Gate Analysis: SonarQube') {
             when {
                 expression { params.action == 'create' }
             }
             steps {
                 script {
-                waitForQualityGate abortPipeline: false, credentialsId: 'sonar-api' 
+                    waitForQualityGate(abortPipeline: false, credentialsId: 'sonar-api')
                 }
             }
         }
-        stage('MavenBuild: Maven') {
+        
+        stage('Maven Build: Maven') {
             when {
                 expression { params.action == 'create' }
             }
             steps {
-                 sh 'mvn clean install'
-                }
+                sh 'mvn clean install'
             }
-        stage('MavenBuild: Maven') {
+        }
+        
+        stage('Docker Build') {
             when {
                 expression { params.action == 'create' }
             }
             steps {
-                dockerBuild("${params.Imagename}","${params.Imagetag}","${params.Dockerhubuser}",)
+                script {
+                    dockerBuild(params.Imagename, params.Imagetag, params.Dockerhubuser)
                 }
             }
         }
     }
-
+}
