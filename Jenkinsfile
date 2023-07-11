@@ -86,17 +86,18 @@ pipeline {
             }
             steps {
                 script {
-                    dockerBuild(${params.Imagename}, ${params.Imagetag}, ${params.Dockerhubuser})
+                    dockerBuild("${params.Imagename}", "${params.Imagetag}", "${params.Dockerhubuser}")
                 }
             }
         }
+        
         stage('Docker scan') {
             when {
                 expression { params.action == 'create' }
             }
             steps {
                 script {
-                    dockerscan(${params.Imagename}, ${params.Imagetag}, ${params.Dockerhubuser})
+                    dockerscan("${params.Imagename}", "${params.Imagetag}", "${params.Dockerhubuser}")
                 }
             }
         }
