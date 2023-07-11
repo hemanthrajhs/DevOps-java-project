@@ -7,7 +7,7 @@ pipeline {
         choice(name: 'action', choices: ['create', 'delete'], description: 'Choose create or destroy')
         string(name: 'appname', description: 'name of the app', defaultValue: 'javaapp')
         string(name: 'region', description: 'name of the region', defaultValue: 'ap-south-1')
-        string(name: 'aws-account-id', description: 'name of the aws-account-id', defaultValue: '412781631922')
+        string(name: 'aws_account_id', description: 'name of the aws-account-id', defaultValue: '412781631922')
     }
 
     stages {
@@ -86,7 +86,7 @@ pipeline {
             }
             steps {
                 script {
-                    dockerBuild("${params.appname}", "${params.region}", "${params.aws-account-id}")
+                    dockerBuild("${params.appname}", "${params.region}", "${params.aws_account_id}")
                 }
             }
         }
@@ -97,7 +97,7 @@ pipeline {
             }
             steps {
                 script {
-                    dockerscan("${params.appname}", "${params.region}", "${params.aws-account-id}")
+                    dockerscan("${params.appname}", "${params.region}", "${params.aws_account_id}")
                 }
             }
         }
@@ -108,7 +108,7 @@ pipeline {
             }
             steps {
                 script {
-                    dockerpush("${params.appname}", "${params.region}", "${params.aws-account-id}")
+                    dockerpush("${params.appname}", "${params.region}", "${params.aws_account_id}")
                 }
             }
         }
