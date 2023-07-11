@@ -101,5 +101,15 @@ pipeline {
                 }
             }
         }
+        stage('Docker scan') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    dockerpush("${params.Imagename}", "${params.Imagetag}", "${params.Dockerhubuser}")
+                }
+            }
+        }
     }
 }
