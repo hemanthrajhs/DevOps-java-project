@@ -111,5 +111,15 @@ pipeline {
                 }
             }
         }
+        stage('Docker Image clean') {
+            when {
+                expression { params.action == 'create' }
+            }
+            steps {
+                script {
+                    dockerImageClean("${params.Imagename}", "${params.Imagetag}", "${params.Dockerhubuser}")
+                }
+            }
+        }
     }
 }
