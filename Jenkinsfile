@@ -101,7 +101,7 @@ pipeline {
                 }
             }
         }
-        stage('Docker scan') {
+        stage('Docker push') {
             when {
                 expression { params.action == 'create' }
             }
